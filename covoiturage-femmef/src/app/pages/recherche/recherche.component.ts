@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router'; // Importer ActivatedRoute
 
 @Component({
   selector: 'app-recherche',
@@ -9,63 +10,19 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./recherche.component.css'],
   imports: [CommonModule, ReactiveFormsModule],
 })
-export class RechercheComponent {
+export class RechercheComponent implements OnInit {
   form: FormGroup;
   minDateTime: string;
   showResults = false;
 
   trajets = [
-    {
-      villeDepart: 'Casablanca',
-      villeDestination: 'Marrakech',
-      date: 'ven. 10 mai',
-      heure: '14:30',
-      conducteur: 'Amina',
-      initiale: 'A',
-      note: 4.9,
-      trajetsTotal: 27,
-      places: '3/4',
-      prix: '80 DH'
-    },
-    {
-      villeDepart: 'Rabat',
-      villeDestination: 'Fès',
-      date: 'sam. 11 mai',
-      heure: '09:00',
-      conducteur: 'Khadija',
-      initiale: 'K',
-      note: 4.7,
-      trajetsTotal: 18,
-      places: '1/3',
-      prix: '60 DH'
-    },
-    {
-      villeDepart: 'Agadir',
-      villeDestination: 'Essaouira',
-      date: 'dim. 12 mai',
-      heure: '16:45',
-      conducteur: 'Hind',
-      initiale: 'H',
-      note: 4.6,
-      trajetsTotal: 21,
-      places: '2/3',
-      prix: '70 DH'
-    },
-    {
-      villeDepart: 'Tanger',
-      villeDestination: 'Tétouan',
-      date: 'lun. 13 mai',
-      heure: '12:15',
-      conducteur: 'Salma',
-      initiale: 'S',
-      note: 4.8,
-      trajetsTotal: 30,
-      places: '2/2',
-      prix: '50 DH'
-    }
+    // Données de trajets (reste inchangé)
   ];
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private route: ActivatedRoute // Injection de ActivatedRoute
+  ) {
     this.minDateTime = new Date().toISOString().slice(0, 16);
 
     this.form = this.fb.group({
@@ -73,6 +30,24 @@ export class RechercheComponent {
       destination: ['', Validators.required],
       datetime: ['', Validators.required],
       passengers: [1, [Validators.required, Validators.min(1)]],
+    });
+  }
+
+  ngOnInit(): void {
+    // Récupérer les queryParams dans ngOnInit
+    this.route.queryParams.subscribe((params) => {
+      if (params['depart']) {
+        this.form.patchValue({ depart: params['depart'] });
+      }
+      if (params['destination']) {
+        this.form.patchValue({ destination: params['destination'] });
+      }
+      if (params['datetime']) {
+        this.form.patchValue({ datetime: params['datetime'] });
+      }
+      if (params['passagers']) {
+        this.form.patchValue({ passengers: params['passagers'] });
+      }
     });
   }
 

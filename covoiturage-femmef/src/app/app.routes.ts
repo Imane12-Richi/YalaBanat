@@ -11,21 +11,17 @@ export const routes: Routes = [
   {
     path: 'auth',
     loadChildren: () =>
-      import('./features/public/auth/auth.routes').then(m => m.AUTH_ROUTES),
+      import('./features/public/auth/auth.routes').then((m) => m.AUTH_ROUTES),
   },
-  {
-    path: 'conductrice',
-    loadChildren: () =>
-      import('./features/conductrice/conductrice.routes').then(m => m.CONDUCTRICE_ROUTES),
-  },
+ 
   {
     path: 'passager',
     loadChildren: () =>
-      import('./features/passager/passager.routes').then(m => m.PASSAGER_ROUTES),
+      import('./features/passager/passager.routes').then((m) => m.PASSAGER_ROUTES),
   },
   {
     path: 'recherche',
     loadChildren: () =>
-      import('./pages/recherche/recherche.module').then(m => m.RechercheModule),
+      import('./pages/recherche/recherche.module').then((m) => m.RechercheModule),
   },
 ];

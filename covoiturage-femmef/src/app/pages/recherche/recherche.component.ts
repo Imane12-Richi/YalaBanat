@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router'; // Importer ActivatedRoute
+import { ActivatedRoute } from '@angular/router';
+import { VoyageService } from '../../core/services/voyage.service';
+import { Voyage } from '../../models/voyage.model';
 
 @Component({
   selector: 'app-recherche',
@@ -14,59 +16,62 @@ export class RechercheComponent implements OnInit {
   form: FormGroup;
   minDateTime: string;
   showResults = false;
-
-  trajets = [
-    // Données de trajets (reste inchangé)
-  ];
+  trajets: Voyage[] = [];
 
   constructor(
     private fb: FormBuilder,
-    private route: ActivatedRoute // Injection de ActivatedRoute
+    private route: ActivatedRoute,
+    private voyageService: VoyageService
   ) {
     this.minDateTime = new Date().toISOString().slice(0, 16);
-
     this.form = this.fb.group({
       depart: ['', Validators.required],
       destination: ['', Validators.required],
-      datetime: ['', Validators.required],
-      passengers: [1, [Validators.required, Validators.min(1)]],
+      dateHeure: ['', Validators.required],  // correspond au formControlName dans le HTML
+      passageres: [1, [Validators.required, Validators.min(1)]],  // idem ici
     });
   }
 
   ngOnInit(): void {
-    // Récupérer les queryParams dans ngOnInit
     this.route.queryParams.subscribe((params) => {
-      if (params['depart']) {
-        this.form.patchValue({ depart: params['depart'] });
-      }
-      if (params['destination']) {
-        this.form.patchValue({ destination: params['destination'] });
-      }
-      if (params['datetime']) {
-        this.form.patchValue({ datetime: params['datetime'] });
-      }
-      if (params['passagers']) {
-        this.form.patchValue({ passengers: params['passagers'] });
-      }
+      if (params['depart']) this.form.patchValue({ depart: params['depart'] });
+      if (params['destination']) this.form.patchValue({ destination: params['destination'] });
+      if (params['dateHeure']) this.form.patchValue({ dateHeure: params['dateHeure'] });
+      if (params['passageres']) this.form.patchValue({ passageres: params['passageres'] });
     });
   }
 
   increasePassengers() {
-    const current = this.form.get('passengers')?.value || 1;
-    this.form.get('passengers')?.setValue(current + 1);
+    const current = this.form.get('passageres')?.value || 1;
+    this.form.get('passageres')?.setValue(current + 1);
   }
 
   decreasePassengers() {
-    const current = this.form.get('passengers')?.value || 1;
+    const current = this.form.get('passageres')?.value || 1;
     if (current > 1) {
-      this.form.get('passengers')?.setValue(current - 1);
+      this.form.get('passageres')?.setValue(current - 1);
     }
   }
 
   submit() {
     if (this.form.valid) {
-      console.log('Recherche validée :', this.form.value);
-      this.showResults = true;
+      const depart = this.form.value.depart;
+      const destination = this.form.value.destination;
+      const date = this.form.value.dateHeure;
+
+      const dateDepart = new Date(date).toISOString();
+      const trimmedDateDepart = dateDepart.slice(0, 19); // Format 'yyyy-MM-ddTHH:mm:ss'
+
+      this.voyageService.rechercherVoyages(depart, destination, trimmedDateDepart).subscribe({
+        next: (data) => {
+          this.trajets = data;
+          this.showResults = true;
+        },
+        error: (err) => {
+          console.error('Erreur lors de la récupération des trajets :', err);
+          this.showResults = false;
+        }
+      });
     } else {
       this.form.markAllAsTouched();
       this.showResults = false;

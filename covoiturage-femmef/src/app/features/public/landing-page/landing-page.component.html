@@ -100,14 +100,26 @@
             <!-- Passagers -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Passagers</label>
-              <div class="flex items-center rounded-xl border border-gray-300 px-0 py-2">
-                <button type="button" (click)="passageres = passageres > 1 ? passageres - 1 : 1" class="text-purple-600 px-2 text-lg font-bold">
+              <div class="relative">
+                <button type="button"
+                  (click)="passageres = passageres > 1 ? passageres - 1 : 1"
+                  class="absolute left-3 top-1/2 -translate-y-1/2 text-purple-500 text-lg focus:outline-none"
+                  tabindex="-1">
                   <i class="fas fa-minus"></i>
                 </button>
-                <input type="number" [(ngModel)]="passageres" name="passageres" min="1" class="text-center h-10 border-none focus:outline-none flex-1" />
-                <button type="button" (click)="passageres = passageres + 1" class="text-purple-600 px-2 pr-0 text-lg font-bold">
+                <button type="button"
+                  (click)="passageres = passageres + 1"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-purple-500 text-lg focus:outline-none"
+                  tabindex="-1">
                   <i class="fas fa-plus"></i>
                 </button>
+                <input
+                  type="number"
+                  [(ngModel)]="passageres"
+                  name="passageres"
+                  min="1"
+                  class="w-full h-12 rounded-xl border border-gray-300 bg-gray-50 pl-10 pr-10 focus:outline-none focus:ring-2 focus:ring-purple-400 text-center"
+                />
               </div>
             </div>
           </div>
